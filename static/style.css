@@ -1,3 +1,21 @@
 /* font-family: 'Alkatra', cursive;
 font-family: 'DynaPuff', cursive;
 font-family: 'Roboto Serif', serif; */
+html {
+    font-family: 'Roboto Serif', serif;
+}
+.select-none {
+    user-select: none;
+}
+.navbar-brand {
+    font-family: 'DynaPuff', cursive;
+}
+.sticky-header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    transition: top 0.4s;
+  }
+.sticky-header.hidden {
+  top: -100%;
+}
