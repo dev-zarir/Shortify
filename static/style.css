@@ -19,3 +19,21 @@ html {
 .sticky-header.hidden {
   top: -100%;
 }
+#animated-tags {
+  position: relative;
+}
+#animated-tags:after {
+  content: '';
+  width: 3px;
+  height: 90%;
+  background-color: var(--bs-body-color);
+  position: absolute;
+  margin-left: 5px;
+  bottom: 0;
+  animation: blink 1s linear infinite;
+}
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
