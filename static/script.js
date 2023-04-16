@@ -29,6 +29,7 @@ async function run_animated_tags() {
     "Less is more - shorten your links with us",
     "Shorten your URLs, lengthen your reach",
   ];
+  await sleep(5);
   while (true) {
     for(let tag of all_tags){
       for(let char of $('#animated-tags').text()){

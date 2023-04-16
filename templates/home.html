@@ -3,10 +3,10 @@
 {% block home %}active{% endblock %}
 {% block content %}
 
-<div class="mt-3 select-none d-flex flex-column justify-content-center align-items-center" style="min-height: 200px;">
+<div class="mt-3 text-center select-none d-flex flex-column justify-content-center align-items-center" style="min-height: 200px;">
     <h1 style="font-family: 'Alkatra', cursive;">Shortify</h1>
     <h3>A Python Based URL Shortener</h3>
-    <h5 id="animated-tags">Shorten your URLs, lengthen your reach</h5>
+    <p id="animated-tags">Shorten your URLs, lengthen your reach</p>
 </div>
 <div class="url-shorting-form mx-auto mt-3" style="max-width: 700px;">
     <form method="POST" id="shorting-form">
@@ -20,4 +20,4 @@
 {% endblock %}
 {% block footer %}
 <script>window.addEventListener('load', run_animated_tags)</script>
-{% endblock %}
+{% endblock %}\\

@@ -2,38 +2,36 @@
 font-family: 'DynaPuff', cursive;
 font-family: 'Roboto Serif', serif; */
 html {
-    font-family: 'Roboto Serif', serif;
+  font-family: 'Roboto Serif', serif;
 }
 .select-none {
-    user-select: none;
+  user-select: none;
 }
 .navbar-brand {
-    font-family: 'DynaPuff', cursive;
+  font-family: 'DynaPuff', cursive;
 }
 .sticky-header {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    transition: top 0.4s;
-  }
-.sticky-header.hidden {
-  top: -100%;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  transition: top 0.4s;
 }
-#animated-tags {
-  position: relative;
+.sticky-header.hidden {
+top: -100%;
 }
 #animated-tags:after {
-  content: '';
-  width: 3px;
-  height: 90%;
-  background-color: var(--bs-body-color);
-  position: absolute;
-  margin-left: 5px;
-  bottom: 0;
-  animation: blink 1s linear infinite;
+content: '';
+width: 3px;
+height: 20px;
+background-color: var(--bs-body-color);
+position: absolute;
+margin-left: 5px;
+margin-top: 5px;
+animation: blink 1.2s linear infinite;
 }
 @keyframes blink {
-  50% {
-    opacity: 0;
-  }
+50% {
+  opacity: 0;
+  transform: scaleY(0.8);
+}
 }
