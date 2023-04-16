@@ -89,13 +89,9 @@ function copyLink(elem) {
   let copyText = btn.parent().find('input').val();
   navigator.clipboard.writeText(copyText)
       .then(function() {
-        btn.tooltip({
-          title: "Copied",
-          trigger: "manual"
-        });
-        btn.tooltip("show");
+        btn.removeClass('bi-clipboard2').addClass('bi-clipboard2-check success');
         setTimeout(function() {
-          btn.tooltip("hide");
+          btn.addClass('bi-clipboard2').removeClass('bi-clipboard2-check success');
         }, 3000);
       })
       .catch(function(err) {

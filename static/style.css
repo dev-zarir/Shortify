@@ -149,6 +149,11 @@ html {
 }
 .input-icon-group {
   position: relative;
+  border-radius: .385rem;
+  transition: box-shadow 0.7s linear;
+}
+.short-url-list .input-icon-group.glow {
+  box-shadow: 0 0 1rem rgba(var(--bs-warning-rgb), 0.5);
 }
 .input-icon-group input {
   padding-right: 35px;
@@ -161,11 +166,12 @@ html {
   font-size: 22px;
   margin: none;
   transition: all 0.3s ease;
+  cursor: pointer;
 }
 .input-icon-group i:hover {
   color: var(--bs-primary);
 }
 .input-icon-group i.success {
   color: var(--bs-success);
-  filter: saturate(300%);
+  filter: saturate(300%) brightness(190%) contrast(120%);
 }
