@@ -40,3 +40,107 @@ html {
     opacity: 0;
   }
 }
+.alert-section {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10;
+  transition: all 0.3s ease;
+  width: 350px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.show-header .alert-section {
+  top: calc(56px + 20px);
+}
+.alert-section .alert {
+  display: flex;
+  position: relative;
+  margin: 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(100px);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+.alert-section .alert.active {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  animation: alert-shake 0.2s linear;
+  animation-delay: 0.3s;
+}
+@keyframes alert-shake {
+  20% {
+    transform: translateX(-20px);
+  }
+  80% {
+    transform: translateX(20px);
+  }
+}
+.alert-section .alert span.loader {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: var(--time-color);
+  animation: width-0 var(--time) linear forwards;
+}
+@keyframes width-0 {
+  100% {
+    width: 0%;
+  }
+}
+.alert-section .alert i {
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+  font-size: 20px;
+}
+.alert-section .alert button.btn-close {
+  margin-left: auto;
+}
+@media (max-width: 500px) {
+  .alert-section {
+    bottom: 3px;
+    top: unset !important;
+    right: unset !important;
+    width: calc(100% - 6px);
+    margin: 0 3px;
+  }
+}
+.login-required-div {
+  position: relative;
+}
+.login-required-div:before {
+  content: "Please login to access this option.";
+  position: absolute;
+  font-size: 20px;
+  font-weight: 600;
+  text-shadow: 0 0 3px black;
+  color: var(--bs-warning);
+  text-align: center;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+.login-required {
+  filter: blur(2px);
+  pointer-events: none;
+  padding: 10px 0px;
+  user-select: none;
+}
+.login-required:after {
+  content: "";
+  position: absolute;
+  background-color: var(--bs-emphasis-color);
+  opacity: 0.2;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  filter: blur(2px);
+}

@@ -1,13 +1,15 @@
 var prevScrollPos = window.pageYOffset;
-window.onscroll = function() {
+window.addEventListener('scroll', function() {
   let currentScrollPos = window.pageYOffset;
-  if (prevScrollPos > currentScrollPos) {
+  if (prevScrollPos >= currentScrollPos) {
     document.querySelector(".sticky-header").classList.remove("hidden");
+    document.querySelector('html').classList.add('show-header');
   } else {
     document.querySelector(".sticky-header").classList.add("hidden");
+    document.querySelector('html').classList.remove('show-header');
   }
   prevScrollPos = currentScrollPos;
-};
+});
 
 function sleep(s) {
   return new Promise(resolve => setTimeout(resolve, s*1000));
@@ -29,7 +31,7 @@ async function run_animated_tags() {
     "Less is more - shorten your links with us",
     "Shorten your URLs, lengthen your reach",
   ];
-  await sleep(5);
+  await sleep(3);
   while (true) {
     for(let tag of all_tags){
       for(let char of $('#animated-tags').text()){
@@ -45,6 +47,46 @@ async function run_animated_tags() {
   };
 };
 
+// Alert Msg
+function show_msg(msg, type = 'primary', time = 3){
+  let id = Math.random()*10**17;
+  let icon_ver = 'bi';
+  let close_btn_click = "close_msg(this.parentElement.getAttribute('id'))"
+  let elem = document.createElement("div");
+  elem.setAttribute("id",id);
+  elem.setAttribute("class", `alert alert-${type}`)
+  elem.setAttribute("style", `--time: ${time}s; --time-color: var(--bs-${type});`)
+  let html = `<span class="loader"></span>`;
+  if (type == 'primary'){
+    html += `<i class="${icon_ver} bi-info-circle"></i>`;
+  } else if (type == 'warning') {
+    html += `<i class="${icon_ver} bi-exclamation-triangle"></i>`;
+  } else if (type == 'danger') {
+    html += `<i class="${icon_ver} bi-x-circle"></i>`;
+  } else if (type == 'success') {
+    html += `<i class="${icon_ver} bi-check-circle"></i>`;
+  }
+  html += `<div class="content me-2">${msg}</div>`;
+  html += `<button class="btn-close shadow-none my-auto" style="transition: all 0.3s ease;" onclick="${close_btn_click}"></button>`;
+  elem.innerHTML=html
+  document.getElementById('alert').prepend(elem);
+  setTimeout(() => {document.getElementById(id).classList.add('active')}, 10);
+  document.getElementById(id).querySelector('span.loader').addEventListener('animationend', function () {close_msg(id)});
+}
+function close_msg (id) {
+  document.getElementById(id).classList.remove('active');
+  document.getElementById(id).addEventListener("transitionend", function () {
+    try {
+    document.getElementById(id).remove();
+    } catch(e) {
+      window.err_msg += '\n\n' + e;
+    }
+  })
+}
+
+window.addEventListener('load', function () {
+  window.dispatchEvent(new Event('scroll'));
+})
 
 // DEVELOPMENT CODE
 function reloadWebPage() {

@@ -9,6 +9,56 @@
     <p id="animated-tags" class="fs-5">Shorten your URLs, lengthen your reach</p>
 </div>
 <div class="url-shorting-form mx-auto mt-3" style="max-width: 700px;">
+    <div class="login-required-div">
+        <div class="login-required mb-4 d-flex flex-wrap gap-3 justify-content-between align-items-center">
+            <div class="mx-auto">
+                <label for="redirect-type">Redirection Type:</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" id="type-http" name="redirect-type" checked>
+                    <label class="form-check-label" for="type-http">
+                  HTTP
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" id="type-meta" name="redirect-type">
+                <label class="form-check-label" for="type-meta">
+                  META
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" id="type-script" name="redirect-type">
+                <label class="form-check-label" for="type-script">
+                  SCRIPT
+                </label>
+              </div>
+            </div>
+            <div class="mx-auto">
+                <label for="service-type">Shortener Service:</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" id="type-sh" name="service-type" checked>
+                    <label class="form-check-label" for="type-sh">
+                        Shortify
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" id="type-ct" name="service-type">
+                    <label class="form-check-label" for="type-ct">
+                  Cuttly
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" id="type-tl" name="service-type">
+                <label class="form-check-label" for="type-tl">
+                  Tly
+                </label>
+              </div>
+            </div>
+            <div class="mx-auto" style="max-width: 120px;">
+                <label for="alias">Custom Alias</label>
+                <input type="text" class="form-control" name="alias-name" id="alias">
+            </div>
+        </div>
+    </div>
     <form method="POST" id="shorting-form">
         <div class="input-group input-group-lg mb-3">
             <input type="url" class="form-control" id="url" name="url" placeholder="Paste your long url here">
@@ -16,6 +66,20 @@
         </div>
     </form>
 </div>
+<div class="short-url-list mx-auto mt-5 d-flex flex-column gap-3" style="max-width: 700px;">
+    <div class="input-group">
+        <input class="form-control" type="text" value="https://t.ly/skfi" readonly disabled>
+        <button class="btn btn-outline-primary">Copy</button>
+    </div>
+</div>
+<div class="credits mx-auto mt-5" style="max-width: 700px;">
+    <h3 class="text-center">Credits</h3>
+    <p>Welcome to our URL Shortener website, powered by Flask and developed by <a href="https://facebook.com/100075924800901" target="_blank">S M Shahriar Zarir</a>, an open source Python developer with expertise in JavaScript and PHP. Our website provides a fast and easy way to shorten long URLs into easy-to-share links, all while respecting your privacy and security.</p>
+    <p>Our website is built using Flask, a flexible and robust Python web framework that makes it easy to build web applications quickly and efficiently. We're proud to say that our website is also an open source project, with its source code available on GitHub for anyone to view, use, and contribute to. You can find our code repository at <a href="https://github.com/dev-zarir/Shortify" target="_blank">https://github.com/dev-zarir/Shortify</a>.</p>
+   <p>Thank you for choosing our URL Shortener website for all of your link-shortening needs. We hope you find our service to be fast, reliable, and convenient, and we welcome anyone who is interested in contributing to our open source project.</p> 
+    
+</div>
+<div style="height: 50px;"></div>
 
 {% endblock %}
 {% block footer %}
