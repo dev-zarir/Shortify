@@ -2,5 +2,30 @@
 {% block title %}Register - Shortify URL{% endblock %}
 {% block register %}active{% endblock %}
 {% block content %}
-<div style="min-height: 250vh;"></div>
+<div class="register-section mx-auto mt-5" style="max-width: 400px;">
+    <div class="card bg-body-tertiary shadow">
+        <div class="card-body">
+            <h3 class="card-title text-center">Register</h3>
+            <form method="POST">
+                <div class="mb-3">
+                    <label for="email">Email Address</label>
+                    <input type="email" name="email" id="email" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label for="pass">Password</label>
+                    <input type="password" name="pass" id="pass" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label for="cpass">Confirm Password</label>
+                    <input type="password" name="cpass" id="cpass" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-primary d-block mx-auto mb-4">Register</button>
+                <div class="helps text-center">
+                    <p class="mb-0">Already have an account? <a class="link-warning text-decoration-none" href="{{ esc_url('/login') }}">Login</a> here</p>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div style="height: 50px;"></div>
 {% endblock %}

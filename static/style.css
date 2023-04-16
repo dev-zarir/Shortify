@@ -25,6 +25,9 @@ html {
   width: 100%;
   transition: top 0.4s;
 }
+.z-index-999 {
+  z-index: 999;
+}
 .sticky-header.hidden {
   top: -100%;
 }
@@ -143,4 +146,26 @@ html {
   height: 100%;
   border-radius: 10px;
   filter: blur(2px);
+}
+.input-icon-group {
+  position: relative;
+}
+.input-icon-group input {
+  padding-right: 35px;
+}
+.input-icon-group i {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translate(-30%, -50%);
+  font-size: 22px;
+  margin: none;
+  transition: all 0.3s ease;
+}
+.input-icon-group i:hover {
+  color: var(--bs-primary);
+}
+.input-icon-group i.success {
+  color: var(--bs-success);
+  filter: saturate(300%);
 }

@@ -30,6 +30,4 @@ def init_app(*args, ver:int = 1, **kwargs):
             app_version=ver,
         )
 
-
-
     return app

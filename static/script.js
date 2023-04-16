@@ -11,8 +11,8 @@ window.addEventListener('scroll', function() {
   prevScrollPos = currentScrollPos;
 });
 
-function sleep(s) {
-  return new Promise(resolve => setTimeout(resolve, s*1000));
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 async function run_animated_tags() {
@@ -31,31 +31,31 @@ async function run_animated_tags() {
     "Less is more - shorten your links with us",
     "Shorten your URLs, lengthen your reach",
   ];
-  await sleep(3);
+  await sleep(3000);
   while (true) {
     for(let tag of all_tags){
       for(let char of $('#animated-tags').text()){
         $('#animated-tags').text($('#animated-tags').text().slice(0, -1));
-        await sleep(0.03);
+        await sleep(30);
       };
       for(let char of tag){
         $('#animated-tags').text($('#animated-tags').text() + char);
-        await sleep(0.03);
+        await sleep(30);
       };
-      await sleep(3);
+      await sleep(3000);
     };
   };
 };
 
 // Alert Msg
-function show_msg(msg, type = 'primary', time = 3){
+function show_msg(msg, type = 'primary', time = 3000){
   let id = Math.random()*10**17;
   let icon_ver = 'bi';
   let close_btn_click = "close_msg(this.parentElement.getAttribute('id'))"
   let elem = document.createElement("div");
   elem.setAttribute("id",id);
   elem.setAttribute("class", `alert alert-${type}`)
-  elem.setAttribute("style", `--time: ${time}s; --time-color: var(--bs-${type});`)
+  elem.setAttribute("style", `--time: ${time}ms; --time-color: var(--bs-${type});`)
   let html = `<span class="loader"></span>`;
   if (type == 'primary'){
     html += `<i class="${icon_ver} bi-info-circle"></i>`;
@@ -82,6 +82,25 @@ function close_msg (id) {
       window.err_msg += '\n\n' + e;
     }
   })
+}
+
+function copyLink(elem) {
+  let btn = $(elem);
+  let copyText = btn.parent().find('input').val();
+  navigator.clipboard.writeText(copyText)
+      .then(function() {
+        btn.tooltip({
+          title: "Copied",
+          trigger: "manual"
+        });
+        btn.tooltip("show");
+        setTimeout(function() {
+          btn.tooltip("hide");
+        }, 3000);
+      })
+      .catch(function(err) {
+        show_msg('Sorry, clipboard is not supported.', 'danger', 10000);
+      });
 }
 
 window.addEventListener('load', function () {

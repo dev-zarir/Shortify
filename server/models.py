@@ -20,6 +20,8 @@ class Short_URL(db.Model):
     __tablename__ = 'urls'
     id = db.Column(db.Integer, primary_key=True)
     slug_text = db.Column(db.String(255), unique=True)
+    title = db.Column(db.String(255))
+    description = db.Column(db.String(255))
     short_url = db.Column(db.String(255))
     org_url = db.Column(db.String(2048), nullable=False)
     visits = db.Column(db.Integer, default=0, nullable=False)
