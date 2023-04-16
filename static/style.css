@@ -2,13 +2,22 @@
 font-family: 'DynaPuff', cursive;
 font-family: 'Roboto Serif', serif; */
 html {
-  font-family: 'Roboto Serif', serif;
+  font-family: "Roboto Serif", serif;
+  --page-max-width: 1140px;
+}
+@media (min-width: 1400px) {
+  html {
+    --page-max-width: 1320px;
+  }
+}
+.navbar .container {
+  max-width: var(--page-max-width);
 }
 .select-none {
   user-select: none;
 }
 .navbar-brand {
-  font-family: 'DynaPuff', cursive;
+  font-family: "DynaPuff", cursive;
 }
 .sticky-header {
   position: fixed;
@@ -17,21 +26,17 @@ html {
   transition: top 0.4s;
 }
 .sticky-header.hidden {
-top: -100%;
+  top: -100%;
 }
 #animated-tags:after {
-content: '';
-width: 3px;
-height: 20px;
-background-color: var(--bs-body-color);
-position: absolute;
-margin-left: 5px;
-margin-top: 5px;
-animation: blink 1.2s linear infinite;
+  content: "";
+  padding: 0px 2px;
+  background-color: var(--bs-body-color);
+  margin-left: 5px;
+  animation: cursor-blink 1.2s infinite ease;
 }
-@keyframes blink {
-50% {
-  opacity: 0;
-  transform: scaleY(0.8);
-}
+@keyframes cursor-blink {
+  50% {
+    opacity: 0;
+  }
 }
