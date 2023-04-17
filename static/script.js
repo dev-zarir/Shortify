@@ -86,6 +86,7 @@ function close_msg (id) {
 
 function copyLink(elem) {
   let btn = $(elem);
+  if (btn.hasClass('success')){return}
   let copyText = btn.parent().find('input').val();
   navigator.clipboard.writeText(copyText)
       .then(function() {
@@ -97,6 +98,18 @@ function copyLink(elem) {
       .catch(function(err) {
         show_msg('Sorry, clipboard is not supported.', 'danger', 10000);
       });
+}
+
+function togglePasswordShow(elem) {
+  let btn = $(elem);
+  let input = btn.parent().find('input');
+  if(input.attr('type') == 'password'){
+    input.attr('type', 'text');
+    btn.removeClass('bi-eye').addClass('bi-eye-slash');
+  } else {
+    input.attr('type', 'password');
+    btn.addClass('bi-eye').removeClass('bi-eye-slash');
+  }
 }
 
 window.addEventListener('load', function () {
