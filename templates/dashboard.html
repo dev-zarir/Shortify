@@ -2,5 +2,29 @@
 {% block title %}Dashboard - Shortify URL{% endblock %}
 {% block dashboard %}active{% endblock %}
 {% block content %}
-<div style="min-height: 250vh;"></div>
+<div class="url-submit-section mx-auto" style="max-width: 700px;">
+    <form method="POST">
+        <div class="mb-3">
+            <div class="redirect-type">
+                <label>Redirection Type</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" id="type-http" name="redirect-type" checked>
+                    <label class="form-check-label" for="type-http">HTTP</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" id="type-meta" name="redirect-type">
+                    <label class="form-check-label" for="type-meta">META</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" id="type-script" name="redirect-type">
+                    <label class="form-check-label" for="type-script">SCRIPT</label>
+                </div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <input type="url" name="url" id="url" placeholder="URL to be shorten" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-outline-primary w-100">Shorten</button>
+    </form>
+</div>
 {% endblock %}

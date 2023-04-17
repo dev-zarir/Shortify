@@ -41,6 +41,10 @@ import re
 endpoints = Blueprint('endpoints', __name__)
 disallowed_slugs = ['login', 'register', 'panel', 'lookup', 'logout']
 
+@endpoints.route('/favicon.ico/', methods=["GET", "POST"])
+def favicon_endpoint():
+    return redirect('/static/favicon.ico')
+
 @endpoints.route('/', methods=["GET", "POST"])
 def home_endpoint():
     if current_user.is_authenticated:
