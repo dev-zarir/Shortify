@@ -37,13 +37,15 @@
           <li class="nav-item">
             <a class="nav-link {% block dashboard %}{% endblock %}"href="{{ esc_url('/panel/') }}">Dashboard</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link"href="{{ esc_url('/logout/') }}">Logout</a>
-          </li>
           {% endif %}
           <li class="nav-item">
             <a class="nav-link {% block lookup %}{% endblock %}"href="{{ esc_url('/lookup/') }}">Lookup</a>
           </li>
+          {% if user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link"href="{{ esc_url('/logout/') }}">Logout</a>
+          </li>
+          {% endif %}
         </ul>
       </div>
     </div>
