@@ -23,20 +23,26 @@
       <div class="collapse navbar-collapse" id="navContent">
         <ul class="navbar-nav ms-auto mb-1 mb-lg-0">
           <hr class="mb-0 mt-3" style="opacity: .5;">
+          {% if not user.is_authenticated %}
           <li class="nav-item">
             <a class="nav-link {% block home %}{% endblock %}"href="{{ esc_url('/') }}">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link {% block dashboard %}{% endblock %}"href="{{ esc_url('/panel/') }}">Dashboard</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link {% block lookup %}{% endblock %}"href="{{ esc_url('/lookup/') }}">Lookup</a>
           </li>
           <li class="nav-item">
             <a class="nav-link {% block login %}{% endblock %}"href="{{ esc_url('/login/') }}">Login</a>
           </li>
           <li class="nav-item">
             <a class="nav-link {% block register %}{% endblock %}"href="{{ esc_url('/register/') }}">Register</a>
+          </li>
+          {% else %}
+          <li class="nav-item">
+            <a class="nav-link {% block dashboard %}{% endblock %}"href="{{ esc_url('/panel/') }}">Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link"href="{{ esc_url('/logout/') }}">Logout</a>
+          </li>
+          {% endif %}
+          <li class="nav-item">
+            <a class="nav-link {% block lookup %}{% endblock %}"href="{{ esc_url('/lookup/') }}">Lookup</a>
           </li>
         </ul>
       </div>

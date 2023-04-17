@@ -12,6 +12,12 @@ from .models import (
     Short_URL,
     Redirect_Types
 )
+from flask_login import(
+    login_user,
+    login_required,
+    logout_user,
+    current_user
+)
 from urllib.parse import (
     unquote_plus,
     urlparse
@@ -20,15 +26,25 @@ from string import (
     ascii_letters,
     digits
 )
+from werkzeug.security import (
+    generate_password_hash,
+    check_password_hash
+)
 from random import (
     choices
 )
+from requests import (
+    get
+)
+import re
 
 endpoints = Blueprint('endpoints', __name__)
-disallowed_slugs = ['login', 'register', 'panel', 'lookup']
+disallowed_slugs = ['login', 'register', 'panel', 'lookup', 'logout']
 
 @endpoints.route('/', methods=["GET", "POST"])
 def home_endpoint():
+    if current_user.is_authenticated:
+        return redirect('/panel/')
     if request.method == 'POST':
         long_url = unquote_plus(request.form.get('url', ''))
         if not long_url:
@@ -43,21 +59,73 @@ def home_endpoint():
 
     return render_template('home.html')
 
+
+@endpoints.route('/logout/', methods=["GET", "POST"])
+@login_required
+def logout_endpoint():
+    logout_user()
+    return redirect('/')
+
+
 @endpoints.route('/login/', methods=["GET", "POST"])
 def login_endpoint():
+    if current_user.is_authenticated:
+        return redirect('/panel/')
+    if request.method == 'POST':
+        email = unquote_plus(request.form.get('email', ''))
+        password = unquote_plus(request.form.get('pass', ''))
+        if not (email and password):
+            return jsonify(success=False, msg='Please fill up all fields!', type='warning', timeout=10000)
+        user = User.query.filter_by(email=email).first()
+        if not user:
+            return jsonify(success=False, msg='User not found! Email does not exists.', type='warning', timeout=10000)
+        if not check_password_hash(user.password, password):
+            return jsonify(success=False, msg='The provided password is not valid.', type='warning', timeout=10000)
+
+        login_user(user, remember=True)
+        return jsonify(success=True, msg='You\'re successfully logged in.', type='success', timeout=3000)
+
     return render_template('login.html')
+
 
 @endpoints.route('/register/', methods=["GET", "POST"])
 def register_endpoint():
+    if current_user.is_authenticated:
+        return redirect('/panel/')
+    if request.method == 'POST':
+        email = unquote_plus(request.form.get('email', ''))
+        password = unquote_plus(request.form.get('pass', ''))
+        cpassword = unquote_plus(request.form.get('cpass', ''))
+        if not (email and password and cpassword):
+            return jsonify(success=False, msg='Please fill up all fields!', type='warning', timeout=10000)
+        if User.query.filter_by(email=email).first():
+            return jsonify(success=False, msg='Email address already exists!', type='warning', timeout=10000)
+        if not is_valid_email(email):
+            return jsonify(success=False, msg='Please provide a valid email!', type='warning', timeout=10000)
+        if len(password) < 6:
+            return jsonify(success=False, msg='Please provide a password of at least 6 characters!', type='warning', timeout=10000)
+        if password != cpassword:
+            return jsonify(success=False, msg='Please make sure both of the passwords are same!', type='warning', timeout=10000)
+
+        new_user = User(email=email, password=generate_password_hash(password))
+        db.session.add(new_user)
+        db.session.commit()
+
+        return jsonify(success=True, msg='Account registered successfully! Please login.', type='success', timeout=3000)
+
     return render_template('register.html')
 
+
 @endpoints.route('/panel/', methods=["GET", "POST"])
+@login_required
 def dashboard_endpoint():
     return render_template('dashboard.html')
+
 
 @endpoints.route('/lookup/', methods=["GET", "POST"])
 def lookup_endpoint():
     return render_template('lookup.html')
+
 
 @endpoints.route('/<slug>/', methods=["GET", "POST"])
 def redirect_endpoint(slug):
@@ -100,5 +168,15 @@ def get_random_slug(l:int=4):
         if not Short_URL.query.filter_by(slug_text=slug).first():
             return slug
 
+def is_valid_email(email):
+    pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+    is_ok = re.match(pattern, email) is not None
+    if not is_ok: return False
+    try:
+        resp = get('https://nobounce.onrender.com/isdelivrable/' + email)
+        return True if resp.json().get('Delivrable') == 'True' else False
+    except:
+        return True
 
-        
+
+

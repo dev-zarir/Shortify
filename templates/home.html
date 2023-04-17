@@ -94,12 +94,16 @@
             r.short_url = r.short_url.replace('http://', 'https://')
           }
           link_div = $(`
-          <div class="input-icon-group glow">
+          <div class="input-icon-group fade">
               <input class="form-control" type="text" value="${r.short_url}" readonly disabled>
               <i class="bi bi-clipboard2" onclick="copyLink(this)"></i>
           </div>
           `);
           $('#url-list').prepend(link_div);
+          setTimeout(() => {
+            link_div.addClass('glow')
+          }, 50);
+          form.find('#url').val('');
         }
         show_msg(r.msg, r.type, r.timeout)
         form.find('*').prop('disabled', false);

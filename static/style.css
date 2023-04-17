@@ -149,12 +149,22 @@ html {
   border-radius: .385rem;
 }
 @keyframes glow {
-  from {
+  0% {
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+    box-shadow: none;
+  }
+  31% {
     box-shadow: 0 0 1rem rgba(var(--bs-warning-rgb), 0.7);
   }
+  100% {
+    box-shadow: none;
+  }
 }
-.short-url-list .input-icon-group {
-  animation: glow 3s ease;
+.short-url-list .input-icon-group.glow {
+  animation: glow 2s linear forwards;
 }
 .input-icon-group input {
   padding-right: 35px;

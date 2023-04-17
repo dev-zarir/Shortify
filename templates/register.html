@@ -6,7 +6,7 @@
     <div class="card bg-body-tertiary shadow">
         <div class="card-body">
             <h3 class="card-title text-center">Register</h3>
-            <form method="POST">
+            <form method="POST" id="register-form">
                 <div class="mb-3">
                     <label for="email">Email Address</label>
                     <input type="email" name="email" id="email" class="form-control" required>
@@ -34,4 +34,37 @@
     </div>
 </div>
 <div style="height: 50px;"></div>
+{% endblock %}
+{% block footer %}
+<script>
+    $('#register-form').submit(function (event) {
+        event.preventDefault();
+        let form = $(this);
+        let email = form.find('#email').val();
+        let pass = form.find('#pass').val();
+        let cpass = form.find('#cpass').val();
+        let formData = form.serialize();
+        if (pass.length < 6) {show_msg('Please provide a password of at least 6 characters!', 'warning', 10000);return false}
+        if (pass != cpass){show_msg('Please make sure both of the passwords are same!', 'warning', 10000);return false}
+        form.find('*').prop('disabled', true);
+        $.ajax({
+            url: window.location.href,
+            type: 'POST',
+            data: formData,
+            success: function (r, s) {
+                if (r.success) {
+                    setTimeout(() => {
+                        window.location.href = '/login/';
+                    }, 3000);
+                }
+                show_msg(r.msg, r.type, r.timeout);
+                form.find('*').prop('disabled', false);
+            },
+            error: function (r, s) {
+                show_msg('Sorry, something went wrong.', 'danger', 10000)
+                form.find('*').prop('disabled', false);
+            }
+        })
+    })
+</script>
 {% endblock %}
