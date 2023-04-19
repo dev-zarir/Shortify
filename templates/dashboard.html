@@ -2,29 +2,150 @@
 {% block title %}Dashboard - Shortify URL{% endblock %}
 {% block dashboard %}active{% endblock %}
 {% block content %}
-<div class="url-submit-section mx-auto" style="max-width: 700px;">
-    <form method="POST">
+<div class="url-submit-section mx-auto my-3" style="max-width: 700px;">
+    <form method="POST" id="dash-url-submit">
         <div class="mb-3">
-            <div class="redirect-type">
-                <label>Redirection Type</label>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" id="type-http" name="redirect-type" checked>
-                    <label class="form-check-label" for="type-http">HTTP</label>
+            <div class="mb-2">
+                <label for="redirect-type">Redirection Type</label>
+                <select name="redirect-type" id="redirect-type" class="form-select">
+                    <option value="http">HTTP</option>
+                    <option value="meta">META</option>
+                    <option value="script">SCRIPT</option>
+                </select>
+            </div>
+            <div class="more-url-info" style="display: none;">
+                <div class="mb-2">
+                    <label for="title">Meta Title (optional)</label>
+                    <input type="text" class="form-control" name="title" id="title">
+                    <span class="form-text">This title will be shown on social sites</span>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" id="type-meta" name="redirect-type">
-                    <label class="form-check-label" for="type-meta">META</label>
+                <div class="mb-2">
+                    <label for="description">Meta Description (optional)</label>
+                    <input type="text" class="form-control" name="description" id="description">
+                    <span class="form-text">This description will be shown on social sites</span>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" id="type-script" name="redirect-type">
-                    <label class="form-check-label" for="type-script">SCRIPT</label>
-                </div>
+            </div>
+            <div class="alias">
+                <label for="alias">Custom Alias</label>
+                <input type="text" class="form-control" name="alias" id="alias" placeholder="Alias for the URL (optional)">
             </div>
         </div>
         <div class="mb-3">
-            <input type="url" name="url" id="url" placeholder="URL to be shorten" class="form-control">
+            <input type="url" name="url" id="url" placeholder="URL to be shorten" class="form-control form-control-lg" required>
         </div>
         <button type="submit" class="btn btn-outline-primary w-100">Shorten</button>
     </form>
 </div>
+<div class="total-count mt-2 text-center fs-5">You have total <b>{{ total_url }}</b> URLs</div>
+<div class="list-url mt-3 mb-4 mx-auto" id="list-url" style="max-width: 700px;">
+    {% for item in links %}
+    <div class="url-item bg-body-tertiary rounded shadow" data-id="{{ item.id }}" data-alias="{{ item.slug_text }}">
+        <div class="url-info">
+            <span class="short_url d-flex gap-2"><b class="text-nowrap">Short URL:</b> <a class="text-decoration-none link-primary" href="{{ request.url_root }}{{ item.slug_text }}" target="_blank">{{ request.url_root }}{{ item.slug_text }}</a> <i onclick="DashCopyLink(this, '.short_url a')" class="bi bi-clipboard2"></i><span class="line-spacer"></span></span>
+            <span class="long_url d-flex gap-2"><b class="text-nowrap">Long URL:</b> <a class="text-decoration-none link-primary" href="{{ item.org_url }}" target="_blank">{{ item.org_url }}</a> <i onclick="DashCopyLink(this, '.long_url a')" class="bi bi-clipboard2"></i><span class="line-spacer"></span></span>
+            <span class="redirect_type badge bg-primary">{{ item.redirect_type.value }}</span>
+            <span class="visits"><span class="badge bg-primary">{{ item.visits }}</span> visits</span>
+            {% if item.redirect_type.value != 'HTTP' %}
+            {% if item.title %}
+            <span class="meta-title-sec"><b>Title:</b> <span class="meta-title">{{ item.title }}</span></span>
+            {% endif %}
+            {% if item.description %}
+            <span class="meta-description-sec"><b>Description:</b> <span class="meta-description">{{ item.description }}</span></span>
+            {% endif %}
+            {% endif %}
+        </div>
+        <div class="url-action select-none">
+            <i onclick="DashCopyLink(this, '.short_url a')" class="bi bi-clipboard2"></i>
+            <i onclick="window.open($(this).parent().parent().find('.long_url a').attr('href'))" class="bi bi-box-arrow-up-right"></i>
+            <i onclick="openEditModal(this)" class="bi bi-pencil-square"></i>
+            <i onclick="$('#delete_modal').attr('data-id', '{{ item.id }}');delete_modal.show();" class="bi bi-trash"></i>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<div class="d-flex justify-content-center align-items-center">
+    <nav>
+        <ul class="pagination">
+          <li class="page-item {% if not links.has_prev %}disabled{% endif %}"><a class="page-link" {% if links.has_prev %}href="./?page={{ links.prev_num }}"{% endif %}>Previous</a></li>
+          {% for num in pages_list %}
+          <li class="page-item {% if not num %}disabled{% endif %} {% if num == page_no%}active{% endif %}"><a class="page-link" {% if num %}href="./?page={{ num }}{% endif %}">{{ num if num else '...' }}</a></li>
+          {% endfor %}
+          <li class="page-item {% if not links.has_next %}disabled{% endif %}"><a class="page-link" {% if links.has_next %}href="./?page={{ links.next_num }}"{% endif %}>Next</a></li>
+        </ul>
+    </nav>
+</div>
+<!-- MODALS -->
+<div id="delete_modal" class="modal fade" tabindex="-1" >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Changes cannot be undone</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>If you delete this url, you will never be able to use it again. Until you add it again.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Back</button>
+          <button type="button" class="btn btn-danger" onclick="deleteURL(this)">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<div id="edit_modal" class="modal fade" tabindex="-1" >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">EDIT URL</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form method="POST" id="dash-url-edit">
+                <input type="hidden" name="id" id="url_id_edit">
+                <div class="mb-3">
+                    <div class="mb-2">
+                        <label for="redirect-type">Redirection Type</label>
+                        <select name="redirect-type" id="redirect-type" class="form-select">
+                            <option value="http">HTTP</option>
+                            <option value="meta">META</option>
+                            <option value="script">SCRIPT</option>
+                        </select>
+                    </div>
+                    <div class="more-url-info" style="display: none;">
+                        <div class="mb-2">
+                            <label for="title">Meta Title (optional)</label>
+                            <input type="text" class="form-control" name="title" id="title">
+                            <span class="form-text">This title will be shown on social sites</span>
+                        </div>
+                        <div class="mb-2">
+                            <label for="description">Meta Description (optional)</label>
+                            <input type="text" class="form-control" name="description" id="description">
+                            <span class="form-text">This description will be shown on social sites</span>
+                        </div>
+                    </div>
+                    <div class="alias">
+                        <label for="alias">Custom Alias</label>
+                        <input type="text" class="form-control" name="alias" id="alias" placeholder="Alias for the URL (optional)">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <input type="url" name="url" id="url" placeholder="URL to be shorten" class="form-control form-control-lg" required>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Back</button>
+          <button type="button" class="btn btn-primary" onclick="saveURLedit(this)">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+{% block footer %}
+<script>
+    let delete_modal = new bootstrap.Modal('#delete_modal');
+    let edit_modal = new bootstrap.Modal('#edit_modal');
+</script>
 {% endblock %}

@@ -28,33 +28,3 @@
 </div>
 <div style="height: 50px;"></div>
 {% endblock %}
-{% block footer %}
-<script>
-    $('#login-form').submit(function (event) {
-        event.preventDefault();
-        let form = $(this);
-        let email = form.find('#email').val();
-        let pass = form.find('#pass').val();
-        let formData = form.serialize();
-        form.find('*').prop('disabled', true);
-        $.ajax({
-            url: window.location.href,
-            type: 'POST',
-            data: formData,
-            success: function (r, s) {
-                if (r.success) {
-                    setTimeout(() => {
-                        window.location.href = '/panel/';
-                    }, 3000);
-                }
-                show_msg(r.msg, r.type, r.timeout);
-                form.find('*').prop('disabled', false);
-            },
-            error: function (r, s) {
-                show_msg('Sorry, something went wrong.', 'danger', 10000)
-                form.find('*').prop('disabled', false);
-            }
-        })
-    })
-</script>
-{% endblock %}

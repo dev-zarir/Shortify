@@ -14,6 +14,7 @@
   <link rel="apple-touch-icon" sizes="180x180" href="{{ esc_url('/static/apple-touch-icon.png') }}">
   <link rel="icon" type="image/png" sizes="32x32" href="{{ esc_url('/static/favicon-32x32.png') }}">
   <link rel="icon" type="image/png" sizes="16x16" href="{{ esc_url('/static/favicon-16x16.png') }}">
+  <script>window.url_root = window.location.protocol == 'https:' ? "{{ request.url_root }}".replace('http://','https://') : "{{ request.url_root }}"</script>
 </head>
 <body>
   <div id="alert" class="alert-section"></div>
@@ -40,11 +41,6 @@
           <li class="nav-item">
             <a class="nav-link {% block dashboard %}{% endblock %}"href="{{ esc_url('/panel/') }}">Dashboard</a>
           </li>
-          {% endif %}
-          <li class="nav-item">
-            <a class="nav-link {% block lookup %}{% endblock %}"href="{{ esc_url('/lookup/') }}">Lookup</a>
-          </li>
-          {% if user.is_authenticated %}
           <li class="nav-item">
             <a class="nav-link"href="{{ esc_url('/logout/') }}">Logout</a>
           </li>

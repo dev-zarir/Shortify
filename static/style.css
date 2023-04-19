@@ -44,7 +44,7 @@ html {
   position: fixed;
   top: 20px;
   right: 20px;
-  z-index: 10;
+  z-index: 1080;
   transition: all 0.3s ease;
   width: 350px;
   display: flex;
@@ -146,7 +146,7 @@ html {
 }
 .input-icon-group {
   position: relative;
-  border-radius: .385rem;
+  border-radius: 0.385rem;
 }
 @keyframes glow {
   0% {
@@ -163,7 +163,7 @@ html {
     box-shadow: none;
   }
 }
-.short-url-list .input-icon-group.glow {
+.short-url-list .input-icon-group.glow, .list-url .url-item.glow {
   animation: glow 2s linear forwards;
 }
 .input-icon-group input {
@@ -183,7 +183,62 @@ html {
 .input-icon-group i:hover {
   color: var(--bs-primary);
 }
-.input-icon-group i.success {
-  color: var(--bs-success);
+.input-icon-group i.success, .list-url .url-item .success {
+  color: var(--bs-success) !important;
   filter: saturate(300%) brightness(190%) contrast(120%);
+}
+.list-url .url-item {
+  margin-bottom: 20px;
+  position: relative;
+}
+.list-url .url-item .url-info .redirect_type {
+  position: absolute;
+  top: 0;
+  border-radius: 0;
+  border-top-left-radius: var(--bs-border-radius);
+  left: 0;
+}
+.list-url .url-item .url-info {
+  padding: 25px 20px 0px 20px;
+  display: flex;
+  flex-direction: column;
+}
+.list-url .url-item .url-action {
+  padding: 10px 20px 20px 20px;
+}
+.list-url .url-info .visits {
+  position: absolute;
+  top: 0;
+  right: 5px;
+  text-transform: uppercase;
+}
+.list-url .url-info .visits span {
+  font-size: 14px;
+}
+.list-url .url-info .short_url a,
+.list-url .url-info .long_url a {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+  word-break: break-all;
+}
+.list-url .url-info i {
+  transition: all 0.3s ease;
+  font-size: 18px;
+}
+.list-url .url-info i:hover, .list-url .url-action i:hover {
+  color: var(--bs-warning);
+}
+.list-url .url-action i {
+  font-size: 22px;
+  transition: all 0.3s ease;
+  margin-right: 10px;
+}
+.list-url .url-action i:last-child {
+  margin-right: none;
+}
+.list-url .url-action i.bi-trash:hover {
+  color: var(--bs-danger);
+  filter: saturate(200%) brightness(120%);
 }

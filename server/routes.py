@@ -39,7 +39,8 @@ from requests import (
 import re
 
 endpoints = Blueprint('endpoints', __name__)
-disallowed_slugs = ['login', 'register', 'panel', 'lookup', 'logout']
+LOCKED_SLUG = ['login', 'register', 'panel', 'logout']
+CUTTLY_API_KEY = "9f77d8e31d30723671318aec49dd56174be5a"
 
 @endpoints.route('/favicon.ico/', methods=["GET", "POST"])
 def favicon_endpoint():
@@ -123,12 +124,107 @@ def register_endpoint():
 @endpoints.route('/panel/', methods=["GET", "POST"])
 @login_required
 def dashboard_endpoint():
-    return render_template('dashboard.html')
+    if request.method == 'POST':
+        redirect_type = unquote_plus(request.form.get('redirect-type', ''))
+        redirect_type = Redirect_Types.SCRIPT if redirect_type == 'script' else Redirect_Types.META if redirect_type == 'meta' else Redirect_Types.HTTP
+        alias = unquote_plus(request.form.get('alias', ''))
+        if alias:
+            if not is_valid_slug(alias):
+                return jsonify(success=False, msg='Invalid Alias! Please remove speacial characters.', type='warning', timeout=10000)
+            if Short_URL.query.filter_by(slug_text=alias).first():
+                return jsonify(success=False, msg='Alias already exists!', type='warning', timeout=10000)
+        else:
+            alias = get_random_slug()
+        long_url = unquote_plus(request.form.get('url', ''))
+        title = unquote_plus(request.form.get('title', ''))
+        description = unquote_plus(request.form.get('description', ''))
+        user_id = current_user.id
+
+        url_db = Short_URL(slug_text=alias, title=title, description=description, org_url=long_url, redirect_type=redirect_type, user_id=user_id)
+        db.session.add(url_db)
+        db.session.commit()
+
+        return jsonify(success=True, msg='URL shortened successfully.', type='success', timeout=3000, id=url_db.id, short_url=request.url_root + alias, alias=alias, title=title, description=description, org_url=long_url, redirect_type=redirect_type.value)
+    
+    page_no = request.args.get('page', 1, type=int)
+    page_size = 10
+
+    user_links = Short_URL.query.filter_by(user_id=current_user.id).order_by(Short_URL.id.desc())
+    total_url = user_links.count()
+    total_page = (total_url - 1) // page_size + 1
+    # if total_url < page_size * (page_no - 1):
+    if page_no > total_page or page_no < 1:
+        page_no = 1
+    user_links = user_links.paginate(page=page_no, per_page=page_size, error_out=False)
+
+    pages_list = [page_no - 1, page_no, page_no + 1]
+    if 0 in pages_list:
+        pages_list.remove(0)
+    if page_no + 1 > total_page:
+        pages_list.remove(page_no + 1)
+    if 1 not in pages_list:
+        if 2 in pages_list:
+            pages_list = [1] + pages_list
+        else:
+            pages_list = [1, None] + pages_list
+    if total_page not in pages_list:
+        if total_page - 1 in pages_list:
+            pages_list += [total_page]
+        else:
+            pages_list += [None, total_page]
+
+    return render_template('dashboard.html', links=user_links, total_url=total_url, page_no=page_no, total_page=total_page, page_size=page_size, pages_list=pages_list)
+
+@endpoints.route('/panel/edit/', methods=["POST"])
+@login_required
+def url_edit_endpoint():
+    url_id = request.form.get('id', '')
+    url_db = Short_URL.query.get(int(url_id))
+    if not url_db:
+        return jsonify(success=False, msg='URL is not found.', type='warning', timeout=10000)
+    if url_db.user_id != current_user.id:
+        return jsonify(success=False, msg='You do not own this url.', type='warning', timeout=10000)
+    redirect_type = unquote_plus(request.form.get('redirect-type', ''))
+    redirect_type = Redirect_Types.SCRIPT if redirect_type == 'script' else Redirect_Types.META if redirect_type == 'meta' else Redirect_Types.HTTP
+    alias = unquote_plus(request.form.get('alias', ''))
+    if alias:
+        if not is_valid_slug(alias):
+            return jsonify(success=False, msg='Invalid Alias! Please remove speacial characters.', type='warning', timeout=10000)
+        if alias != url_db.slug_text:
+            if Short_URL.query.filter_by(slug_text=alias).first():
+                return jsonify(success=False, msg='Alias already exists!', type='warning', timeout=10000)
+    else:
+        alias = get_random_slug()
+    long_url = unquote_plus(request.form.get('url', ''))
+    title = unquote_plus(request.form.get('title', ''))
+    description = unquote_plus(request.form.get('description', ''))
+
+    url_db.redirect_type = redirect_type
+    url_db.slug_text = alias
+    url_db.org_url = long_url
+    url_db.title = title
+    url_db.description = description
+
+    db.session.commit()
+    return jsonify(success=True, msg='URL updated successfully.', type='success', timeout=3000, short_url=request.url_root + alias, alias=alias, title=title, description=description, org_url=long_url, redirect_type=redirect_type.value)
 
 
-@endpoints.route('/lookup/', methods=["GET", "POST"])
-def lookup_endpoint():
-    return render_template('lookup.html')
+@endpoints.route('/panel/delete/', methods=["POST"])
+@login_required
+def url_delete_endpoint():
+    url_id = request.form.get('id', -1, type=int)
+    if url_id == -1:
+        return jsonify(success=False, msg='Please send a valid url id.', type='warning', timeout=10000)
+    url_db = Short_URL.query.get(int(url_id))
+    if not url_db:
+        return jsonify(success=False, msg='URL is not found.', type='warning', timeout=10000)
+    if url_db.user_id != current_user.id:
+        return jsonify(success=False, msg='You don\'t own this url.', type='warning', timeout=10000)
+
+    db.session.delete(url_db)
+    db.session.commit()
+
+    return jsonify(success=True, msg='URL deleted successfully.', type='success', timeout=3000)
 
 
 @endpoints.route('/<slug>/', methods=["GET", "POST"])
@@ -182,5 +278,66 @@ def is_valid_email(email):
     except:
         return True
 
+def is_valid_slug(slug):
+    if slug.lower() in LOCKED_SLUG:
+        return False
+    pattern = r'^[a-z0-9]+(?:[_-][a-z0-9]+)*$'
+    return bool(re.match(pattern, slug))
 
+def cuttly_shorturl(long_url, alias=None):
+    params = {
+        'key': CUTTLY_API_KEY,
+        'short': long_url,
+        'noTitle': 1
+    }
+    if alias:
+        if not is_valid_slug(alias):
+            raise Exception('Invalid Alias. Special characters isn\'t supported')
+        params['name'] = alias
+    resp = get('http://cutt.ly/api/api.php', params=params)
+    errors = {
+        1: 'The link has already been shortened',
+        2: 'The entered link is not a link',
+        3: 'The preferred link alias is already taken',
+        5: 'The link has not passed the validation. Includes invalid characters',
+        6: 'The link provided is from a blocked domain',
+        8: 'Cutt.ly monthly limit reached'
+    }
+    try:
+        url_info = resp.json().get('url')
+        scode = url_info.get('status')
+    except:
+        raise Exception("Unknown Error: " + resp.text)
+    if scode != 7:
+        if scode in list(errors):
+            raise Exception(errors.get(scode))
+        else:
+            raise Exception("Unknown Error: " + resp.text)
+    return url_info.get('shortLink')
+
+
+def cuttly_editurl(short_link, new_alias):
+    params = {
+        'key': CUTTLY_API_KEY,
+        'edit': short_link,
+        'name': new_alias
+    }
+    if not is_valid_slug(new_alias):
+        raise Exception('Invalid Alias. Special characters isn\'t supported')
+    key = "9f77d8e31d30723671318aec49dd56174be5a"
+    resp = get('http://cutt.ly/api/api.php', params=params)
+    errors = {
+        2: 'Alias is already taken.',
+        3: 'The url doesn\'t exists in your account',
+    }
+    try:
+        scode = resp.json().get('status')
+    except:
+        raise Exception('Error: ' + resp.text)
+    if scode != 1:
+        if scode in list(errors):
+            raise Exception(errors.get(scode))
+        else:
+            raise Exception('Unknown Error')
+    return True
 
