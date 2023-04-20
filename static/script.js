@@ -218,6 +218,8 @@ $('[id="redirect-type"]').change(function () {
     select.parent().parent().find('.more-url-info').hide();
   }
 })
+$('[id="redirect-type"]').trigger('change');
+
 $('#dash-url-submit').submit(function (event) {
   event.preventDefault();
   let form = $(this);
